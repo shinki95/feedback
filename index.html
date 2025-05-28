@@ -133,8 +133,7 @@
         function highlightStars(r) { document.querySelectorAll('.star').forEach((s,i)=> s.classList.toggle('active', i<r)); }
         function updateStars() { highlightStars(selectedRating); }
         const STORAGE_METHOD = 'GOOGLE_SHEETS';
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwLKZwqJum-vzTgMTD2slcs5JXyqBpBNuhh1Kc5M24HEZI4BCPwIi-EQD0ZLjW1HPuhyA/exec';
-        async function saveToGoogleSheets(fd) {
+        const GOOGLE_SHEETS_URL = '/api/save-feedback';
             try {
                 const res = await fetch(GOOGLE_SHEETS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(fd) });
                 return res.ok;
