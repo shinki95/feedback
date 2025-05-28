@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Heating Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 500px; width: 100%; overflow: hidden; animation: slideUp 0.6s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .header { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 24px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .content { padding: 30px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #333; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .product-selector { position: relative; }
+        select { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; background: white; cursor: pointer; transition: all 0.3s ease; }
+        select:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1); }
+        .heating-instructions { background: #f8f9fa; border-radius: 12px; padding: 20px; border-left: 4px solid #4CAF50; display: none; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .heating-instructions.show { display: block; }
+        .heating-instructions h3 { color: #2c5530; margin-bottom: 15px; font-size: 16px; }
+        .heating-steps { list-style: none; counter-reset: step-counter; }
+        .heating-steps li { counter-increment: step-counter; margin-bottom: 12px; padding-left: 30px; position: relative; line-height: 1.5; }
+        .heating-steps li::before { content: counter(step-counter); position: absolute; left: 0; top: 0; background: #4CAF50; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .rating-section { text-align: center; }
+        .stars { display: flex; justify-content: center; gap: 5px; margin-bottom: 20px; }
+        .star { font-size: 30px; color: #ddd; cursor: pointer; transition: all 0.2s ease; user-select: none; }
+        .star:hover, .star.active { color: #ffd700; transform: scale(1.1); }
+        .star:hover ~ .star { color: #ddd; transform: scale(1); }
+        .feedback-input { width: 100%; min-height: 100px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; resize: vertical; transition: all 0.3s ease; }
+        .feedback-input:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1); }
+        .submit-btn { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3); }
+        .submit-btn:active { transform: translateY(0); }
+        .thank-you { text-align: center; padding: 30px; color: #4CAF50; display: none; animation: bounce 0.6s ease-out; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+        .thank-you.show { display: block; }
+        .icon { width: 20px; height: 20px; display: inline-block; }
+        @media (max-width: 480px) {
+            .container { margin: 10px; }
+            .content { padding: 20px; }
+            .header { padding: 20px; }
+            .header h1 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Product Heating Guide</h1>
+            <p>Heat your food the right way for the best taste</p>
+        </div>
+        <div class="content">
+            <div class="section">
+                <h2>Select Product</h2>
+                <div class="product-selector">
+                    <select id="productSelect">
+                        <option value="">Please select a product</option>
+                        <option value="ramen">Instant Noodles/Ramen</option>
+                        <option value="rice">Fried Rice</option>
+                        <option value="soup">Soup Dishes</option>
+                        <option value="pasta">Pasta</option>
+                        <option value="pizza">Pizza</option>
+                        <option value="chicken">Chicken</option>
+                        <option value="sandwich">Sandwiches/Wraps</option>
+                        <option value="burger">Burgers</option>
+                    </select>
+                </div>
+            </div>
+            <div class="heating-instructions" id="heatingInstructions">
+                <h3 id="instructionTitle">Heating Instructions</h3>
+                <ol class="heating-steps" id="instructionSteps"></ol>
+            </div>
+            <div class="section">
+                <h2>Rate Your Experience</h2>
+                <div class="rating-section">
+                    <div class="stars" id="starRating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <h2>Your Feedback</h2>
+                <textarea class="feedback-input" id="feedbackText" placeholder="Share your thoughts..."></textarea>
+                <button class="submit-btn" id="submitBtn">Submit Feedback</button>
+            </div>
+            <div class="thank-you" id="thankYou">
+                <h2>🎉 Thank You!</h2>
+                <p>We appreciate your valuable feedback.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const productData = {
+            ramen: { title: "Instant Noodles/Ramen Heating Instructions", steps: ["Boil 550ml water", "Add noodles + seasoning", "Cook 4-5 mins", "Add toppings", "Serve hot"] },
+            rice:  { title: "Fried Rice Instructions", steps: ["Microwave 2-3 mins", "Or stir-fry 3-4 mins", "Season & serve hot"] },
+            soup:  { title: "Soup Heating Instructions", steps: ["Pour into pot", "Heat until boiling", "Simmer 2-3 mins", "Serve hot"] },
+            pasta: { title: "Pasta Heating Instructions", steps: ["Microwave 1-2 mins", "Or pan heat 2-3 mins", "Add cheese & serve"] },
+            pizza: { title: "Pizza Heating Instructions", steps: ["Preheat oven 180°C", "Bake 5-7 mins", "Check crispness", "Serve hot"] },
+            chicken:{title: "Chicken Heating Instructions", steps:["Air-fry 180°C 3-4 mins","Flip & 2-3 mins","Serve crispy"]},
+            sandwich:{title:"Sandwich Heating", steps:["Panini press 2-3 mins per side","Serve warm"]},
+            burger:{title:"Burger Heating",steps:["Skillet patty 2-3 mins/side","Toast buns","Reassemble & serve"]}
+        };
+        let selectedRating = 0;
+        document.getElementById('productSelect').addEventListener('change', function() {
+            const data = productData[this.value];
+            const instr = document.getElementById('heatingInstructions');
+            const titleEl = document.getElementById('instructionTitle');
+            const stepsEl = document.getElementById('instructionSteps');
+            if (data) {
+                titleEl.textContent = data.title;
+                stepsEl.innerHTML = data.steps.map(s => `<li>${s}</li>`).join('');
+                instr.classList.add('show');
+            } else {
+                instr.classList.remove('show');
+            }
+        });
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = +star.dataset.rating;
+                updateStars();
+            });
+            star.addEventListener('mouseenter', () => highlightStars(+star.dataset.rating));
+        });
+        document.getElementById('starRating').addEventListener('mouseleave', updateStars);
+        function highlightStars(r) { document.querySelectorAll('.star').forEach((s,i)=> s.classList.toggle('active', i<r)); }
+        function updateStars() { highlightStars(selectedRating); }
+        const STORAGE_METHOD = 'GOOGLE_SHEETS';
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwLKZwqJum-vzTgMTD2slcs5JXyqBpBNuhh1Kc5M24HEZI4BCPwIi-EQD0ZLjW1HPuhyA/exec';
+        async function saveToGoogleSheets(fd) {
+            try {
+                const res = await fetch(GOOGLE_SHEETS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(fd) });
+                return res.ok;
+            } catch { return false; }
+        }
+        document.getElementById('submitBtn').addEventListener('click', async function() {
+            const product = document.getElementById('productSelect');
+            const feedback = document.getElementById('feedbackText');
+            if (!product.value) return alert('제품을 선택해주세요');
+            if (selectedRating===0) return alert('별점을 선택해주세요');
+            this.disabled=true; this.textContent='Submitting...';
+            const fd = { product: product.options[product.selectedIndex].text, rating:selectedRating, feedback: feedback.value||'No feedback', timestamp: new Date().toISOString() };
+            const ok = await saveToGoogleSheets(fd);
+            if (ok) {
+                document.querySelector('.content').style.display='none';
+                document.getElementById('thankYou').classList.add('show');
+            } else {
+                alert('죄송합니다. 에러가 발생했습니다.');
+                this.disabled=false; this.textContent='Submit Feedback';
+            }
+        });
+    </script>
+</body>
+</html>
